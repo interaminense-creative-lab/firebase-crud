@@ -30,11 +30,23 @@ class FirebaseCRUD<T> {
     }
   }
 
-  async read(id: string) {
+  async read(id: string): Promise<{ [key: string]: T } | null> {
     try {
       const snapshot = await get(
         child(ref(this.db), `${this.collection}/${id}`)
       );
+      if (snapshot.exists()) {
+        return snapshot.val();
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async readAll(): Promise<{ [key: string]: T } | null> {
+    try {
+      const snapshot = await get(ref(this.db, this.collection));
       if (snapshot.exists()) {
         return snapshot.val();
       }
